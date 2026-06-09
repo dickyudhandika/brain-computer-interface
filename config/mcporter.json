@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "refero": {
+      "baseUrl": "https://api.refero.design/mcp",
+      "headers": {
+        "Authorization": "Bearer mcp-QZ...v1qX"
+      }
+    }
+  }
+}

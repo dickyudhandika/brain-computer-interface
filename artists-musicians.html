@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artists & Musicians Using Emotiv BCI — Use Case</title>
+<style>
+  /* ─── Reset & Base ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    color: #111;
+    background: #fff;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ─── Tokens ─── */
+  :root {
+    --black: #000;
+    --white: #fff;
+    --off-white: #f6f6f6;
+    --gray-100: #eaeaea;
+    --gray-300: #bbb;
+    --gray-500: #888;
+    --gray-700: #555;
+    --accent: #0066ff;
+    --radius-card: 16px;
+    --radius-btn: 8px;
+    --max-w: 1200px;
+    --section-gap: 96px;
+  }
+
+  /* ─── Utility ─── */
+  .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  /* ─── Section Alternation ─── */
+  .section-dark { background: var(--black); color: var(--white); }
+  .section-light { background: var(--off-white); color: var(--black); }
+  .section-white { background: var(--white); color: var(--black); }
+
+  /* ─── Hero ─── */
+  .hero {
+    padding: 120px 0 100px;
+    position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 70% 40%, rgba(255,255,255,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero .container { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    padding: 6px 14px; border-radius: 100px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800; letter-spacing: -1.5px; line-height: 1.05;
+    max-width: 900px; margin-bottom: 24px;
+  }
+  .hero p {
+    font-size: 18px; color: var(--gray-300);
+    max-width: 640px; line-height: 1.6;
+  }
+  .hero-stats {
+    display: flex; gap: 48px; margin-top: 56px; padding-top: 40px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .hero-stat-number {
+    font-size: 40px; font-weight: 800; letter-spacing: -1px; line-height: 1;
+    margin-bottom: 4px;
+  }
+  .hero-stat-label { font-size: 14px; color: var(--gray-500); font-weight: 500; }
+
+  /* ─── Section Headers ─── */
+  .section-header {
+    padding: var(--section-gap) 0 48px;
+  }
+  .section-header h2 {
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 700; letter-spacing: -0.8px; line-height: 1.1;
+  }
+  .section-header p {
+    margin-top: 12px; font-size: 16px; color: var(--gray-500);
+    max-width: 560px;
+  }
+
+  /* ─── Project Grid ─── */
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    padding-bottom: var(--section-gap);
+  }
+  .project-card {
+    background: var(--white); border-radius: var(--radius-card);
+    padding: 32px; border: 1px solid var(--gray-100);
+    display: flex; flex-direction: column;
+    transition: border-color 0.2s;
+  }
+  .project-card:hover { border-color: var(--gray-300); }
+  .section-dark .project-card {
+    background: #1a1a1a; border-color: #2a2a2a;
+  }
+  .section-dark .project-card:hover { border-color: #444; }
+  .project-year {
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    letter-spacing: 0.5px; margin-bottom: 8px;
+  }
+  .section-dark .project-year { color: var(--accent); }
+  .project-card h3 {
+    font-size: 18px; font-weight: 650; letter-spacing: -0.3px;
+    margin-bottom: 10px; line-height: 1.3;
+  }
+  .project-card p {
+    font-size: 14px; color: var(--gray-500); line-height: 1.6;
+    flex: 1;
+  }
+  .section-dark .project-card p { color: var(--gray-300); }
+
+  /* ─── Featured Project ─── */
+  .featured {
+    display: grid; grid-template-columns: 55fr 45fr; gap: 48px;
+    padding: 96px 0;
+  }
+  .featured-content .featured-year {
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .featured-content h2 {
+    font-size: clamp(32px, 3.5vw, 48px);
+    font-weight: 700; letter-spacing: -1px; line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .featured-content p {
+    font-size: 16px; color: var(--gray-500); line-height: 1.7;
+  }
+  .section-dark .featured-content p { color: var(--gray-300); }
+  .featured-visual {
+    aspect-ratio: 16/10; border-radius: var(--radius-card);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px; color: rgba(255,255,255,0.1);
+    position: relative; overflow: hidden;
+  }
+  .featured-visual::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 50%, rgba(0,102,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ─── About the Project ─── */
+  .about-c {
+    padding: 96px 0;
+  }
+  .about-c-content {
+    max-width: 680px; margin: 0 auto;
+  }
+  .about-c-label {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
+    text-transform: uppercase; color: var(--gray-500);
+    margin-bottom: 48px;
+  }
+  .about-c-body {
+    font-size: 18px; line-height: 1.7; color: var(--gray-700);
+    margin-bottom: 64px;
+  }
+  .about-c-body p + p { margin-top: 1.5em; }
+  .section-dark .about-c-body { color: #ccc; }
+  .about-c-pull {
+    padding: 48px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .about-c-pull-number {
+    font-size: clamp(48px, 6vw, 88px);
+    font-weight: 800; letter-spacing: -2px; line-height: 1;
+    color: var(--accent); margin-bottom: 12px;
+  }
+  .about-c-pull-text {
+    font-size: 18px; font-weight: 500; color: var(--gray-300);
+    line-height: 1.5;
+  }
+
+  /* ─── Gallery (Darkroom Contact Sheet) ─── */
+  .gallery {
+    padding: 0;
+    background: var(--black);
+  }
+  .gallery-label {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
+    text-transform: uppercase; color: var(--gray-500);
+    padding: 96px 0 48px;
+    max-width: 680px;
+  }
+  .gallery-mosaic {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-flow: dense;
+    gap: 0;
+  }
+  .gallery-tile {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+    margin: -1px 0 0 -1px;
+    cursor: pointer;
+  }
+  .gallery-tile::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--tile-bg);
+    transition: filter 0.4s ease;
+  }
+  .gallery-tile:hover::before {
+    filter: brightness(0.82);
+  }
+  .gallery-tile-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
+    pointer-events: none;
+  }
+  .gallery-tile-caption span {
+    font-size: 15px; font-weight: 500; letter-spacing: -0.2px;
+    color: var(--white); line-height: 1.3;
+  }
+  .gallery-tile-wide {
+    grid-column: span 2;
+    aspect-ratio: 8/3;
+  }
+
+  /* ─── Timeline ─── */
+  .timeline {
+    position: relative; padding-bottom: var(--section-gap);
+  }
+  .timeline::before {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 12px;
+    width: 1px; background: var(--gray-100);
+  }
+  .section-dark .timeline::before { background: rgba(255,255,255,0.1); }
+  .timeline-item {
+    position: relative; padding: 0 0 32px 44px;
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-dot {
+    position: absolute; left: 6px; top: 6px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--white);
+  }
+  .section-dark .timeline-dot { border-color: var(--black); }
+  .timeline-year {
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    letter-spacing: 0.3px; margin-bottom: 4px;
+  }
+  .timeline-item h3 {
+    font-size: 16px; font-weight: 650; letter-spacing: -0.2px;
+    margin-bottom: 4px;
+  }
+  .timeline-item p {
+    font-size: 14px; color: var(--gray-500); line-height: 1.6;
+  }
+  .section-dark .timeline-item p { color: var(--gray-300); }
+
+  /* ─── Related (Dark Pill Links) ─── */
+  .related-dark {
+    background: var(--black);
+    padding: 96px 0;
+  }
+  .related-dark .section-header {
+    padding: 0 0 48px;
+  }
+  .related-dark .section-header h2 {
+    color: var(--white);
+  }
+  .related-dark .section-header p {
+    color: var(--gray-500);
+  }
+  .related-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .related-pill {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .related-pill:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+  .related-pill h3 {
+    font-size: 16px; font-weight: 650; color: var(--white);
+    margin: 0;
+  }
+  .related-pill p {
+    font-size: 13px; color: var(--gray-500); line-height: 1.5;
+    margin: 0;
+  }
+  .related-pill-arrow {
+    margin-top: auto;
+    font-size: 12px; font-weight: 600; color: var(--accent);
+    letter-spacing: 0.3px;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    .hero { padding: 80px 0 60px; }
+    .hero-stats { gap: 24px; flex-wrap: wrap; }
+    .hero-stat-number { font-size: 32px; }
+    .project-grid { grid-template-columns: 1fr; }
+    .featured { grid-template-columns: 1fr; gap: 32px; padding: 64px 0; }
+    .about-c-pull { padding: 32px 0; }
+    .about-c-pull-number { font-size: 48px; }
+    .gallery-mosaic { grid-template-columns: repeat(2, 1fr); }
+    .gallery-tile-wide { grid-column: span 2; aspect-ratio: 8/3; }
+    .related-list { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero section-dark">
+  <div class="container">
+    <div class="hero-badge">Use Case</div>
+    <h1>Artists &amp; Musicians Using Emotiv BCI Technology</h1>
+    <p>From brainwave-driven music compositions to neuro-responsive installations — artists and musicians have been at the forefront of BCI creativity since 2013.</p>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-number">2013–2025</div>
+        <div class="hero-stat-label">Years of creative collaboration</div>
+      </div>
+      <div>
+        <div class="hero-stat-number">20+</div>
+        <div class="hero-stat-label">Projects &amp; performances</div>
+      </div>
+      <div>
+        <div class="hero-stat-number">15</div>
+        <div class="hero-stat-label">Featured artists</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FEATURED PROJECT ═══ -->
+<section class="section-white">
+  <div class="container featured">
+    <div class="featured-content">
+      <div class="featured-year">2025 — Featured Project</div>
+      <h2>AEON feat. Dana Leong</h2>
+      <p>A new song and music video by Grammy-winner Dana Leong's collaborative, wellbeing-focused music series <em>TEKTONIK</em>, featuring Emotiv Insight and BrainViz to translate neural activity into visual and sonic elements in real time.</p>
+    </div>
+    <div class="featured-visual">🧠</div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT THE PROJECT ═══ -->
+<section class="about-c section-dark">
+  <div class="container">
+    <div class="about-c-content">
+      <div class="about-c-label">About the project</div>
+      <div class="about-c-body">
+        <p>TEKTONIK is a wellbeing-focused music series by Grammy-winner Dana Leong that bridges neuroscience and creative expression. In this collaboration, Emotiv Insight headsets captured real-time brain activity from performers and audience members, while BrainViz translated the neural data into flowing visual patterns that synced to the live music.</p>
+      </div>
+      <div class="about-c-pull">
+        <div class="about-c-pull-number">1.2M</div>
+        <div class="about-c-pull-text">Global views across streaming platforms and social media during the campaign launch.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GALLERY ═══ -->
+<section class="gallery">
+  <div class="container">
+    <div class="gallery-label">Project Gallery</div>
+  </div>
+  <div class="gallery-mosaic">
+    <div class="gallery-tile gallery-tile-wide" style="--tile-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
+      <div class="gallery-tile-caption"><span>Live Brainwave Music Session</span></div>
+    </div>
+    <div class="gallery-tile" style="--tile-bg: linear-gradient(135deg, #2e1a2e 0%, #3e1a3e 50%, #1e0a2e 100%);">
+      <div class="gallery-tile-caption"><span>Eunoia II</span></div>
+    </div>
+    <div class="gallery-tile" style="--tile-bg: linear-gradient(135deg, #0a1a2e 0%, #1a2a3e 50%, #0a1a3e 100%);">
+      <div class="gallery-tile-caption"><span>Neural Recording Setup</span></div>
+    </div>
+    <div class="gallery-tile" style="--tile-bg: linear-gradient(135deg, #1a2e1a 0%, #2a3e2a 50%, #1a2e2a 100%);">
+      <div class="gallery-tile-caption"><span>The Mind, Explained</span></div>
+    </div>
+    <div class="gallery-tile" style="--tile-bg: linear-gradient(135deg, #2e2e1a 0%, #3e3e2a 50%, #1e1e0a 100%);">
+      <div class="gallery-tile-caption"><span>TEKTONIK Live</span></div>
+    </div>
+    <div class="gallery-tile" style="--tile-bg: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #0a0a0a 100%);">
+      <div class="gallery-tile-caption"><span>BrainViz Visualization</span></div>
+    </div>
+    <div class="gallery-tile" style="--tile-bg: linear-gradient(135deg, #3e2a1a 0%, #2e1a0a 50%, #1e0a0a 100%);">
+      <div class="gallery-tile-caption"><span>NEUROsymphony</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJECT GRID ═══ -->
+<section class="section-light">
+  <div class="container">
+    <div class="section-header">
+      <h2>All Projects</h2>
+      <p>Every creative and artistic collaboration using EMOTIV technology, from 2013 to today.</p>
+    </div>
+    <div class="project-grid" id="projectGrid"></div>
+  </div>
+</section>
+
+<!-- ═══ RELATED USE CASES ═══ -->
+<section class="related-dark">
+  <div class="container">
+    <div class="section-header">
+      <h2>Explore Other Use Cases</h2>
+      <p>EMOTIV technology spans far beyond the arts. See how BCI is applied across industries.</p>
+    </div>
+    <div class="related-list">
+      <a class="related-pill" href="#">
+        <h3>Documentaries &amp; Media</h3>
+        <p>Film, television, and documentary projects featuring EMOTIV and BCI technology.</p>
+        <div class="related-pill-arrow">View use case →</div>
+      </a>
+      <a class="related-pill" href="#">
+        <h3>Academic Research</h3>
+        <p>Studies on empathy, compassion, and cognitive assessment using EMOTIV headsets.</p>
+        <div class="related-pill-arrow">View use case →</div>
+      </a>
+      <a class="related-pill" href="#">
+        <h3>Consumer Research</h3>
+        <p>Brand and advertising research powered by real-time brain activity measurement.</p>
+        <div class="related-pill-arrow">View use case →</div>
+      </a>
+      <a class="related-pill" href="#">
+        <h3>Accessibility &amp; Mobility</h3>
+        <p>BCI-powered wheelchairs, exoskeletons, gaming, and assistive communication systems.</p>
+        <div class="related-pill-arrow">View use case →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<script>
+// ═══════════════════════════════════════
+//  DATA — Edit this object to reuse the
+//  template for other use case categories
+// ═══════════════════════════════════════
+const useCaseData = {
+  badge: "Use Case",
+  title: "Artists & Musicians Using Emotiv BCI Technology",
+  summary: "From brainwave-driven music compositions to neuro-responsive installations — artists and musicians have been at the forefront of BCI creativity since 2013.",
+  stats: [
+    { number: "2013–2025", label: "Years of creative collaboration" },
+    { number: "20+", label: "Projects & performances" },
+    { number: "15", label: "Featured artists" },
+  ],
+  featured: {
+    year: "2025",
+    title: "AEON feat. Dana Leong",
+    description: "A new song and music video by Grammy-winner Dana Leong's collaborative, wellbeing-focused music series TEKTONIK, featuring Emotiv Insight and BrainViz to translate neural activity into visual and sonic elements in real time.",
+    visual: "🧠",
+  },
+  sectionTitle: "All Projects",
+  sectionDesc: "Every creative and artistic collaboration using EMOTIV technology, from 2013 to today.",
+  projects: [
+    { year: "2025", title: "AEON feat. Dana Leong", desc: "A new song and music video by Grammy-winner Dana Leong's collaborative, wellbeing-focused music series, TEKTONIK, featuring Emotiv Insight and BrainViz." },
+    { year: "2025", title: "Music of the Mind: How Art Moves the Brain", desc: "A collaboration between Kim Awa and Chaz Knapp recording brainwaves in James Turrell's \"Skyspace\" to create ambient musical scores." },
+    { year: "2025", title: "\"Pack\" Robotic Installation", desc: "An agent, wearing a neurointerface, controlled a pack of 14 robotic dogs that moved in sync around an artist, responding to their answers." },
+    { year: "2025", title: "The Echoes", desc: "Yannick Trapman-O'Brien's immersive one-on-one theater piece where audio is manipulated by the participant's subconscious." },
+    { year: "2024", title: "Duet: Brainwaves Music BCI", desc: "Winner of Cal Hacks 2024 — uses EPOC X and Google's Gemini AI to translate emotional states into music for children with disabilities." },
+    { year: "2024", title: "Brainstorms: A Great Gig in the Sky", desc: "A massive immersive residency at Frameless London visualizing the neural impact of Pink Floyd's music on 125 simultaneous listeners." },
+    { year: "2024", title: "NEUROsymphony", desc: "Grammy-winner Dana Leong's high-profile performance at IDECS using real-time brain data to drive live jazz and AI accompaniment." },
+    { year: "2024", title: "Olympic Torch Relay: BCI Exoskeleton", desc: "Pierre, a participant with a disability, used an EMOTIV headset to control a robotic arm to carry the Olympic flame." },
+    { year: "2024", title: "Project SoulSync", desc: "A group meditation performance where collective calm levels drive the volume and depth of a live sound bath." },
+    { year: "2022", title: "Open Your Eyes and See the Music", desc: "A Netflix promotion in which Hania Rani & Dobrawa Czocher performed as images reacted to their brainwaves." },
+    { year: "2021", title: "Star Seeds by Angie C", desc: "Neuro-musician Angie Coombes uses a headset to modulate the legendary TONTO analog synthesizer." },
+    { year: "2020", title: "NeuroKnitting Beethoven", desc: "Brainwaves from a pianist playing Beethoven were converted into digital patterns and physically knitted into scarves." },
+    { year: "2017", title: "Vessels by Grace Leslie", desc: "A neuro-feedback performance where the artist's internal states create a sonic duet with her flute." },
+    { year: "2017", title: "Intersections: An SF State of Mind", desc: "Featuring the Del Sol String Quartet, this performance visualized the neural synchrony between professional musicians." },
+    { year: "2016", title: "Noor: A Brain Opera", desc: "Ellen Pearlman's immersive opera where a performer's neural data triggers the libretto and visuals." },
+    { year: "2016", title: "Dual Brains", desc: "A performance exploring neural connectedness and empathy between two people through synchronized EEG." },
+    { year: "2015", title: "Pangolin Scales Animatronic Dress", desc: "Designed by Anouk Wipprecht, this robotic garment moves its \"scales\" in response to the wearer's stress and focus levels." },
+    { year: "2015", title: "The MiND Ensemble", desc: "An improvisational group using the EPOC to explore the \"mind-machine-music\" connection." },
+    { year: "2013", title: "Eunoia by Lisa Park", desc: "The seminal performance where brainwaves are translated into vibrations in 48 pools of water." },
+    { year: "2013", title: "Smirnoff Mindtunes", desc: "A project enabling musicians with physical disabilities to compose electronic music using only their minds." },
+  ],
+};
+
+// ═══════════════════════════════════════
+//  RENDERER
+// ═══════════════════════════════════════
+// Swap this renderer for other sections
+// (timeline, academic, etc.) as needed
+// ═══════════════════════════════════════
+
+function renderProjects() {
+  const grid = document.getElementById('projectGrid');
+  if (!grid) return;
+  grid.innerHTML = useCaseData.projects.map(p => `
+    <article class="project-card">
+      <div class="project-year">${p.year}</div>
+      <h3>${p.title}</h3>
+      <p>${p.desc}</p>
+    </article>
+  `).join('');
+}
+
+renderProjects();
+</script>
+
+</body>
+</html>
